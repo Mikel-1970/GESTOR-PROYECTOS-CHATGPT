@@ -1,0 +1,51 @@
+name: Alta automática de avisos INGITECH
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  onboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio central
+        uses: actions/checkout@v4
+
+      - name: Instalar cliente INGITECH donde falte
+        env:
+          GH_TOKEN: ${{ secrets.INGITECH_REPO_TOKEN }}
+          OWNER: Mikel-1970
+          TARGET_PATH: .github/workflows/ingitech-notifications.yml
+          TEMPLATE_PATH: .github/ingitech/ingitech-notifications-template.yml
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "Falta el secreto INGITECH_REPO_TOKEN" >&2
+            exit 1
+          fi
+
+          TEMPLATE_B64=$(base64 -w 0 "$TEMPLATE_PATH")
+
+          gh api --method GET /user/repos \
+            -f affiliation=owner \
+            -f per_page=100 \
+            --paginate \
+            --jq '.[] | select(.owner.login == env.OWNER and .archived == false) | .full_name' \
+          | while read -r REPO; do
+              [ -n "$REPO" ] || continue
+
+              if gh api "repos/$REPO/contents/$TARGET_PATH" >/dev/null 2>&1; then
+                echo "Ya integrado: $REPO"
+                continue
+              fi
+
+              echo "Integrando: $REPO"
+              gh api --method PUT "repos/$REPO/contents/$TARGET_PATH" \
+                -f message='Añadir cliente automático de avisos INGITECH' \
+                -f content="$TEMPLATE_B64" >/dev/null
+            done
