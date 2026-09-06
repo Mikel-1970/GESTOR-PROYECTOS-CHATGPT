@@ -1,0 +1,41 @@
+name: Avisos INGITECH
+
+on:
+  workflow_dispatch:
+    inputs:
+      status:
+        description: Estado
+        required: true
+        default: CORRECTO
+        type: choice
+        options:
+          - CORRECTO
+          - ERROR
+          - REQUIERE_REVISIÓN
+          - REQUIERE_APROBACIÓN
+      version:
+        description: Versión o revisión
+        required: false
+        type: string
+      summary:
+        description: Resumen breve
+        required: true
+        type: string
+      link:
+        description: Enlace opcional
+        required: false
+        type: string
+
+jobs:
+  notify:
+    uses: Mikel-1970/CURSO-IA-CHAT-GPT/.github/workflows/notify-app-reusable.yml@main
+    with:
+      project: GESTOR-PROYECTOS-CHATGPT
+      status: ${{ inputs.status }}
+      version: ${{ inputs.version }}
+      summary: ${{ inputs.summary }}
+      link: ${{ inputs.link }}
+      build_result: success
+      deploy_result: success
+      validate_result: success
+    secrets: inherit
