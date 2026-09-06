@@ -1,0 +1,83 @@
+name: Avisos INGITECH
+
+on:
+  workflow_call:
+    inputs:
+      process:
+        required: false
+        default: proceso
+        type: string
+      status:
+        required: true
+        type: string
+      version:
+        required: false
+        default: ""
+        type: string
+      summary:
+        required: true
+        type: string
+      validate_result:
+        required: false
+        default: ""
+        type: string
+      validation_detail:
+        required: false
+        default: ""
+        type: string
+      action_required:
+        required: false
+        default: ""
+        type: string
+      app_url:
+        required: false
+        default: ""
+        type: string
+  workflow_dispatch:
+    inputs:
+      status:
+        description: Estado manual
+        required: true
+        type: choice
+        options:
+          - ERROR
+          - REQUIERE REVISIÓN
+          - REQUIERE APROBACIÓN
+      version:
+        description: Versión o revisión
+        required: false
+        type: string
+      summary:
+        description: Resumen breve
+        required: true
+        type: string
+      validation_detail:
+        description: Detalle disponible
+        required: false
+        type: string
+      action_required:
+        description: Acción requerida
+        required: false
+        type: string
+      app_url:
+        description: Enlace opcional
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  notify:
+    uses: Mikel-1970/CURSO-IA-CHAT-GPT/.github/workflows/notify-event-central.yml@main
+    with:
+      project: ${{ github.event.repository.name }}
+      process: ${{ inputs.process || 'proceso' }}
+      status: ${{ inputs.status }}
+      version: ${{ inputs.version }}
+      summary: ${{ inputs.summary }}
+      validate_result: ${{ inputs.validate_result }}
+      validation_detail: ${{ inputs.validation_detail }}
+      action_required: ${{ inputs.action_required }}
+      app_url: ${{ inputs.app_url }}
