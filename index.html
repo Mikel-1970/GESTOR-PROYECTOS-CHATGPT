@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>GPT Activity Manager</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">G</span><div><strong>GPT Activity</strong><small>Gestor central</small></div></div>
+    <nav id="nav"></nav>
+    <div class="side-actions">
+      <button class="ghost" id="exportBtn">Exportar copia</button>
+      <button class="ghost danger" id="resetBtn">Vaciar datos locales</button>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">GESTOR DE ACTIVIDAD CHATGPT</p>
+        <h1 id="viewTitle">Dashboard</h1>
+      </div>
+      <div class="top-actions">
+        <label class="search"><span>⌕</span><input id="searchInput" placeholder="Buscar en todo…" /></label>
+        <button id="importBtn" class="secondary">Importar</button>
+        <button id="addBtn" class="primary">+ Nuevo</button>
+      </div>
+    </header>
+
+    <section id="content"></section>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modal-card"><button class="close" id="closeModal">×</button><div id="modalBody"></div></div></div>
+<input id="fileInput" type="file" accept=".json,.csv" hidden />
+<script type="module" src="app.js"></script>
+</body>
+</html>

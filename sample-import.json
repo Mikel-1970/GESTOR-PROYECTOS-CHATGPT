@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "id": "sample_chat_1",
+      "title": "Revisión de propuesta",
+      "type": "chat",
+      "status": "activo",
+      "priority": 2,
+      "summary": "Revisar el alcance y decidir próximos pasos.",
+      "nextAction": "Cerrar revisión",
+      "url": "https://chatgpt.com/"
+    },
+    {
+      "id": "sample_work_1",
+      "title": "Generación de entregable",
+      "type": "work",
+      "status": "requiere revisión",
+      "priority": 1,
+      "summary": "Trabajo largo pendiente de validación.",
+      "nextAction": "Revisar entregable",
+      "url": "https://chatgpt.com/"
+    }
+  ]
+}
