@@ -1,4 +1,4 @@
-name: Avisos INGITECH
+name: Avisos INGITECH manuales seguros
 
 on:
   workflow_dispatch:
@@ -6,13 +6,11 @@ on:
       status:
         description: Estado
         required: true
-        default: CORRECTO
         type: choice
         options:
-          - CORRECTO
           - ERROR
-          - REQUIERE_REVISIÓN
-          - REQUIERE_APROBACIÓN
+          - REQUIERE REVISIÓN
+          - REQUIERE APROBACIÓN
       version:
         description: Versión o revisión
         required: false
@@ -21,21 +19,32 @@ on:
         description: Resumen breve
         required: true
         type: string
-      link:
+      validation_detail:
+        description: Detalle o evidencia disponible
+        required: false
+        type: string
+      action_required:
+        description: Acción requerida
+        required: false
+        type: string
+      app_url:
         description: Enlace opcional
         required: false
         type: string
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   notify:
-    uses: Mikel-1970/CURSO-IA-CHAT-GPT/.github/workflows/notify-app-reusable.yml@main
+    uses: Mikel-1970/CURSO-IA-CHAT-GPT/.github/workflows/notify-event-central.yml@main
     with:
       project: GESTOR-PROYECTOS-CHATGPT
+      process: gestión de proyecto
       status: ${{ inputs.status }}
       version: ${{ inputs.version }}
       summary: ${{ inputs.summary }}
-      link: ${{ inputs.link }}
-      build_result: success
-      deploy_result: success
-      validate_result: success
-    secrets: inherit
+      validation_detail: ${{ inputs.validation_detail }}
+      action_required: ${{ inputs.action_required }}
+      app_url: ${{ inputs.app_url }}
