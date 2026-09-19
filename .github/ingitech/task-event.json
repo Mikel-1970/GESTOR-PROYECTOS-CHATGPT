@@ -1,0 +1,11 @@
+{
+  "project": "SISTEMA-AVISOS-INGITECH",
+  "process": "configuración Pushover",
+  "status": "REQUIERE REVISIÓN",
+  "version": "2026-09-19",
+  "summary": "Sistema de avisos Pushover ampliado para tareas y procesos de desarrollo.",
+  "validate_result": "",
+  "validation_detail": "Conectores GitHub, avisos de CI, despliegue validado de VollDium y puente para tareas ChatGPT configurados.",
+  "action_required": "Confirmar que este aviso ha llegado al móvil.",
+  "app_url": "https://github.com/Mikel-1970/GESTOR-PROYECTOS-CHATGPT/actions"
+}
