@@ -1,0 +1,23 @@
+name: Avisar fallo del alta automática de avisos
+
+on:
+  workflow_run:
+    workflows: ["Alta automática de avisos INGITECH"]
+    types: [completed]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  notify_error:
+    if: ${{ contains(fromJSON('["failure","timed_out","startup_failure"]'), github.event.workflow_run.conclusion) }}
+    uses: ./.github/workflows/ingitech-notifications.yml
+    with:
+      process: mantenimiento de notificaciones
+      status: ERROR
+      version: ${{ github.event.workflow_run.head_sha }}
+      summary: "El alta automática de avisos INGITECH ha fallado."
+      validation_detail: "Conclusión de GitHub Actions: ${{ github.event.workflow_run.conclusion }}."
+      action_required: "Revisar el workflow de alta automática."
+      app_url: ${{ github.event.workflow_run.html_url }}
