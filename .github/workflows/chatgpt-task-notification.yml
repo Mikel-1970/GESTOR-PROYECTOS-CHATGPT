@@ -1,0 +1,87 @@
+name: Avisar tarea ChatGPT por Pushover
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/ingitech/task-event.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+    outputs:
+      project: ${{ steps.event.outputs.project }}
+      process: ${{ steps.event.outputs.process }}
+      status: ${{ steps.event.outputs.status }}
+      version: ${{ steps.event.outputs.version }}
+      summary: ${{ steps.event.outputs.summary }}
+      validate_result: ${{ steps.event.outputs.validate_result }}
+      validation_detail: ${{ steps.event.outputs.validation_detail }}
+      action_required: ${{ steps.event.outputs.action_required }}
+      app_url: ${{ steps.event.outputs.app_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Leer y validar evento
+        id: event
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os
+
+          path = ".github/ingitech/task-event.json"
+          with open(path, encoding="utf-8") as f:
+              data = json.load(f)
+
+          allowed = {"CORRECTO", "ERROR", "REQUIERE REVISIÓN", "REQUIERE APROBACIÓN"}
+          status = str(data.get("status", "")).strip()
+          if status not in allowed:
+              raise SystemExit(f"Estado no permitido: {status!r}")
+
+          project = str(data.get("project", "")).strip()
+          summary = str(data.get("summary", "")).strip()
+          if not project or not summary:
+              raise SystemExit("project y summary son obligatorios")
+
+          validate_result = str(data.get("validate_result", "")).strip()
+          validation_detail = str(data.get("validation_detail", "")).strip()
+          if status == "CORRECTO" and (validate_result != "success" or not validation_detail):
+              raise SystemExit("CORRECTO exige validate_result=success y validation_detail")
+
+          values = {
+              "project": project,
+              "process": str(data.get("process", "tarea ChatGPT")).strip() or "tarea ChatGPT",
+              "status": status,
+              "version": str(data.get("version", "")).strip(),
+              "summary": summary,
+              "validate_result": validate_result,
+              "validation_detail": validation_detail,
+              "action_required": str(data.get("action_required", "")).strip(),
+              "app_url": str(data.get("app_url", "")).strip(),
+          }
+
+          out = os.environ["GITHUB_OUTPUT"]
+          with open(out, "a", encoding="utf-8") as f:
+              for key, value in values.items():
+                  marker = f"EOF_{key}"
+                  f.write(f"{key}<<{marker}\n{value}\n{marker}\n")
+          PY
+
+  notify:
+    needs: parse
+    uses: Mikel-1970/CURSO-IA-CHAT-GPT/.github/workflows/notify-event-central.yml@main
+    with:
+      project: ${{ needs.parse.outputs.project }}
+      process: ${{ needs.parse.outputs.process }}
+      status: ${{ needs.parse.outputs.status }}
+      version: ${{ needs.parse.outputs.version }}
+      summary: ${{ needs.parse.outputs.summary }}
+      validate_result: ${{ needs.parse.outputs.validate_result }}
+      validation_detail: ${{ needs.parse.outputs.validation_detail }}
+      action_required: ${{ needs.parse.outputs.action_required }}
+      app_url: ${{ needs.parse.outputs.app_url }}
